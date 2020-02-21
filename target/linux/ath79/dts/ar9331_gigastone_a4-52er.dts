@@ -53,10 +53,14 @@
 		};
   };
 
-  gpio-poweroff {
-    compatible = "gpio-poweroff";
-    gpios = <&gpio 18 GPIO_ACTIVE_HIGH>;
-  };
+	// OpenWRT does not enable board level poweroff
+	// or the GPIO Poweroff driver needed for this.
+	// Can still be used via traditional GPIO control
+	// however.
+  // gpio-poweroff {
+  //   compatible = "gpio-poweroff";
+  //   gpios = <&gpio 18 GPIO_ACTIVE_HIGH>;
+  // };
 
   gpio-batlevel {
     compatible = "gpio-decoder";
@@ -79,8 +83,15 @@
 };
 
 &usb {
-  dr_mode = "host";
+	#address-cells = <1>;
+	#size-cells = <0>;
+	dr_mode = "host";
 	status = "okay";
+
+	hub_port: port@1 {
+		reg = <1>;
+		#trigger-source-cells = <0>;
+	};
 };
 
 &usb_phy {
