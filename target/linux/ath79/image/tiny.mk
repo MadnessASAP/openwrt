@@ -20,3 +20,15 @@ define Device/pqi_air-pen
   SUPPORTED_DEVICES += pqi-air-pen
 endef
 TARGET_DEVICES += pqi_air-pen
+
+# Support for the Gigastone A4-52ER Smart Battery, based off of TP-Link MR3020 v1
+define Device/gigastone_a4-52er
+  ATH_SOC := ar9331
+  DEVICE_TITLE := Gigastone A4-52ER
+  IMAGE_SIZE := 5376k
+  IMAGES += factory-uImage.bin factory-rootfs.bin
+  IMAGE/factory-uImage.bin := append-kernel | pad-to $$$$(BLOCKSIZE) | check-size 0x140000
+  IMAGE/factory-rootfs.bin := append-rootfs | pad-rootfs | check-size 0x400000
+  SUPPORTED_DEVICES += gigastone_a4-52er
+endef
+TARGET_DEVICES += gigastone_a4-52er
