@@ -969,6 +969,21 @@ define Device/elecom_wrc-2533gst2
 endef
 TARGET_DEVICES += elecom_wrc-2533gst2
 
+define Device/elecom_wtc-x1800gc
+  $(Device/dsa-migration)
+  $(Device/uimage-lzma-loader)
+  DEVICE_VENDOR := ELECOM
+  IMAGES += factory.bin
+  IMAGE/factory.bin := $$(sysupgrade_bin) | check-size | \
+	elecom-wrc-gs-factory $$$$(ELECOM_HWNAME) 0.00 -N | \
+	append-string MT7621_ELECOM_$$$$(ELECOM_HWNAME)
+  DEVICE_PACKAGES := kmod-mt7615-firmware -uboot-envtools
+  IMAGE_SIZE := 51456k
+  DEVICE_MODEL := WTC-X1800GC
+  ELECOM_HWNAME := WTC-X1800GC
+endef
+TARGET_DEVICES += elecom_wtc-x1800gc
+
 define Device/etisalat_s3
   $(Device/sercomm_dxx)
   IMAGE_SIZE := 32768k
