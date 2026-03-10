@@ -3,7 +3,7 @@
 #include <dt-bindings/input/input.h>
 
 / {
-	compatible = "mediatek,mt7621-rfb-ax-nand", "mediatek,mt7621-soc";
+	compatible = "elecom,wtc-x1800gc", "mediatek,mt7621-soc";
 	model = "ELECOM WTC-X1800GC";
 
 	keys {
@@ -17,14 +17,15 @@
 			linux,code = <KEY_RESTART>;
 		};
 
-		switch {
-			label = "modeswitch";
+		repeater {
+			label = "repeater";
 			gpios = <&gpio 7 GPIO_ACTIVE_LOW>;
-			linux,code = <0x03>;
+			linux,code = <BTN_0>;
+			linux,input-type = <EV_SW>;
 		};
 
 		wps {
-			label = "wps_btn";
+			label = "wps";
 			gpios = <&gpio 18 GPIO_ACTIVE_LOW>;
 			linux,code = <KEY_WPS_BUTTON>;
 		};
@@ -68,11 +69,23 @@
 
 &gmac0 {
 	phy-mode = "trgmii";
+	nvmem-cells = <&macaddr_factory_1fdfa>;
+	nvmem-cell-names = "mac-address";
 };
 
 &gmac1 {
-	label = "wan";
 	status = "okay";
+	label = "wan";
+	phy-handle = <&ethphy0>;
+
+	nvmem-cells = <&macaddr_factory_1fdf4>;
+	nvmem-cell-names = "mac-address";
+};
+
+&mdio {
+	ethphy0: ethernet-phy@0 {
+		reg = <0>;
+	};
 };
 
 &uartlite2 {
@@ -143,29 +156,28 @@
 				reg = <0x200000 0x1c0000>;
 			};
 
-			partition@3600000 {
-				label = "Config";
-				reg = <0x3600000 0x100000>;
+			partition@3c0000 {
+				label = "firmware";
+				reg = <0x3c0000 0x3340000>;
+
+				compatible = "fixed-partitions";
+				#address-cells = <1>;
+				#size-cells = <1>;
+
+				partition@0 {
+					label = "kernel";
+					reg = <0x4000 0x380000>;
+				};
+
+				partition@800000 {
+					label = "ubi";
+					reg = <0x3C0000 0x2E80000>;
+				};
 			};
 
 			partition@3700000 {
-				label = "RAS2";
+				label = "firmware2";
 				reg = <0x3700000 0x3240000>;
-			};
-
-			partition@3740000 {
-				label = "firmware";
-				reg = <0x3700000 0x3240000>;
-			};
-
-			partition@3C0000 {
-				label = "RAS1";
-				reg = <0x3c0000 0x3240000>;
-			};
-
-			partition@400000 {
-				label = "firmware_now";
-				reg = <0x3c0000 0x3240000>;
 			};
 
 			partition@6940000 {
@@ -188,5 +200,19 @@
 				reg = <0x6c40000 0x1340000>;
 			};
 		};
+	};
+};
+
+&factory {
+	compatible = "nvmem-cells";
+	#address-cells = <1>;
+	#size-cells = <1>;
+
+	macaddr_factory_1fdfa: macaddr@1fdfa {
+		reg = <0x1fdfa 0x6>;
+	};
+
+	macaddr_factory_1fdf4: macaddr@1fdf4 {
+		reg = <0x1fdf4 0x6>;
 	};
 };
